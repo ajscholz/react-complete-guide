@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import Person from './Person/Person';
+import Persons from '../components/Persons/Persons';
+import Cockpit from '../components/Cockpit/Cockpit';
 import appCss from './App.module.css';
 import './App.css';
 
@@ -48,36 +49,21 @@ class App extends Component {
 
   render() {
     let persons = null;
-    let buttonClass= '';
 
     if (this.state.showPersons) {
-      persons = (
-        <div>
-          {this.state.persons.map((person, index) => {
-            return <Person
-              click={() => this.deletePersonHandler(index)}
-              name={person.name}
-              age={person.age}
-              key={person.id}
-              changed={(event) => this.nameChangedHandler(event, person.id)} />
-          })}
-        </div>
-      );
-      buttonClass = appCss.Red;
+      persons = <Persons
+        persons={this.state.persons}
+        clicked={this.deletePersonHandler}
+        changed={this.nameChangedHandler} />;
     }
-
-    // Creates dynamic styling, which is displayed inside the <p> element below
-    const classes = [];
-    if (this.state.persons.length <= 2) classes.push(appCss.red);
-    if (this.state.persons.length <= 1) classes.push(appCss.bold);
 
     return (
       <div className={appCss.App}>
-        <h1>Hi, I'm a React App</h1>
-        <p className={classes.join(' ')}>This is really working!</p>
-        <button
-          className={buttonClass}
-          onClick={this.togglePersonsHandler}>Toggle Persons</button>
+        <Cockpit
+          showPersons={this.state.showPersons}
+          persons={this.state.persons}
+          click={this.togglePersonsHandler}
+        />
         {persons}
       </div>
     );
