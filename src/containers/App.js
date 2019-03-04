@@ -16,6 +16,7 @@ class App extends Component {
       ],
       otherState: 'some other value',
       showPersons: false,
+      showCockpit: true,
     };
   }
 
@@ -84,13 +85,22 @@ class App extends Component {
 
     return (
       <div className={appCss.App}>
-        <Cockpit
-          title={this.props.title}
-          showPersons={this.state.showPersons}
-          persons={this.state.persons}
-          click={this.togglePersonsHandler}
-        />
-        {persons}
+        <button
+          onClick={() => {
+            this.setState({ showCockpit: false })
+          }}
+        >
+          Remove Cockpit
+        </button>
+        {this.state.showCockpit ? (
+          <Cockpit
+            title={this.props.title}
+            showPersons={this.state.showPersons}
+            persons={this.state.persons}
+            click={this.togglePersonsHandler}
+          />
+        ) : null}
+          {persons}
       </div>
     );
     // return React.createElement('div', {className: 'App'}, React.createElement('h1', null, `Hi, I'm a React Element!!!`));
