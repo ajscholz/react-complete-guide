@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import Persons from '../components/Persons/Persons';
 import Cockpit from '../components/Cockpit/Cockpit';
-import appCss from './App.module.css';
+import withClass from '../hoc/withClass';
+import Aux from '../hoc/Aux';
+import classes from './App.module.css';
 import './App.css';
+import AuthContext from '../context/auth-context';
 
 class App extends Component {
   constructor() {
@@ -17,6 +20,8 @@ class App extends Component {
       otherState: 'some other value',
       showPersons: false,
       showCockpit: true,
+      changeCounter: 0,
+      authenticated: false,
     };
   }
 
@@ -48,7 +53,12 @@ class App extends Component {
     persons[personIndex] = person;
 
     // Now update state with copied arrays & objects
-    this.setState({ persons: persons })
+    this.setState((prevState, props) => {
+      return {
+        persons: persons,
+        changeCounter: prevState.changeCounter + 1,
+      };
+    });
   }
 
   togglePersonsHandler = () => {
@@ -72,6 +82,10 @@ class App extends Component {
     console.log('---------------');
   }
 
+  loginHandler = () => {
+    this.setState({ authenticated: true, });
+  }
+
   render() {
     console.log('[App.js] rendering...')
     let persons = null;
@@ -80,11 +94,12 @@ class App extends Component {
       persons = <Persons
         persons={this.state.persons}
         clicked={this.deletePersonHandler}
-        changed={this.nameChangedHandler} />;
+        changed={this.nameChangedHandler}
+        isAuthenticated={this.state.authenticated}/>;
     }
 
     return (
-      <div className={appCss.App}>
+      <Aux>
         <button
           onClick={() => {
             this.setState({ showCockpit: false })
@@ -92,19 +107,24 @@ class App extends Component {
         >
           Remove Cockpit
         </button>
-        {this.state.showCockpit ? (
-          <Cockpit
-            title={this.props.title}
-            showPersons={this.state.showPersons}
-            persons={this.state.persons}
-            click={this.togglePersonsHandler}
-          />
-        ) : null}
+        <AuthContext.Provider value={{
+            authenticated: this.state.authenticated,
+            login: this.loginHandler,
+        }} >
+          {this.state.showCockpit ? (
+            <Cockpit
+              title={this.props.title}
+              showPersons={this.state.showPersons}
+              personsLength={this.state.persons.length}
+              click={this.togglePersonsHandler}
+            />
+          ) : null}
           {persons}
-      </div>
+        </AuthContext.Provider>
+      </Aux>
     );
     // return React.createElement('div', {className: 'App'}, React.createElement('h1', null, `Hi, I'm a React Element!!!`));
   }
 }
 
-export default App
+export default withClass(App, classes.App);
